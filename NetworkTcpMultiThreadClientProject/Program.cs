@@ -15,7 +15,7 @@ Random random = new Random();
 
 foreach(var mess in messages)
 {
-    Thread.Sleep(3000);
+    //Thread.Sleep(3000);
     byte[] buffer = Encoding.UTF8.GetBytes(mess + "\n");
     Console.WriteLine($"From us to Server: {mess}");
     await stream.WriteAsync(buffer);
@@ -24,5 +24,5 @@ foreach(var mess in messages)
         bufferResponse.Add((byte)bufferByte);
     Console.WriteLine($"From Server: {Encoding.UTF8.GetString(bufferResponse.ToArray())}");
     bufferResponse.Clear();
-    Task.Delay(random.Next(3000, 5000));
+    await Task.Delay(random.Next(3000, 5000));
 }
