@@ -8,21 +8,29 @@ using TcpClient client = new TcpClient();
 await client.ConnectAsync(IPAddress.Loopback, 7777);
 var stream = client.GetStream();
 
-var bufferResponse = new List<byte>();
-int bufferByte;
+using var reader = new StreamReader(stream);
+using var writer = new StreamWriter(stream);
+
+//var bufferResponse = new List<byte>();
+//int bufferByte;
 
 Random random = new Random();
 
 foreach(var mess in messages)
 {
     //Thread.Sleep(3000);
-    byte[] buffer = Encoding.UTF8.GetBytes(mess + "\n");
+    //byte[] buffer = Encoding.UTF8.GetBytes(mess + "\n");
     Console.WriteLine($"From us to Server: {mess}");
-    await stream.WriteAsync(buffer);
+    await writer.WriteAsync(mess);
+    await writer.FlushAsync();
+    //await stream.WriteAsync(buffer);
 
-    while ((bufferByte = stream.ReadByte()) != '\n')
-        bufferResponse.Add((byte)bufferByte);
-    Console.WriteLine($"From Server: {Encoding.UTF8.GetString(bufferResponse.ToArray())}");
-    bufferResponse.Clear();
+    var response = await reader.ReadLineAsync();
+    Console.WriteLine($"From Server: {response}");
+
+    //while ((bufferByte = stream.ReadByte()) != '\n')
+    //    bufferResponse.Add((byte)bufferByte);
+    //Console.WriteLine($"From Server: {Encoding.UTF8.GetString(bufferResponse.ToArray())}");
+    //bufferResponse.Clear();
     await Task.Delay(random.Next(3000, 5000));
 }
