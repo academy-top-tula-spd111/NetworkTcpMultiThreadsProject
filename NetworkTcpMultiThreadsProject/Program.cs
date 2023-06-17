@@ -36,8 +36,13 @@ async Task ConnectClientAsync(TcpClient client)
         while ((bufferByte = stream.ReadByte()) != '\n')
             bufferResponse.Add((byte)bufferByte);
         var response = Encoding.UTF8.GetString(bufferResponse.ToArray());
-        if (response == "END") break;
-        Console.WriteLine($"From Client: {response}");
+        if (response == "END\n")
+        {
+            
+            break;
+        }
+            
+        Console.WriteLine($"From Client {client.Client.RemoteEndPoint}: {response}");
         string message = messages[random.Next(0, messages.Length)];
         Console.WriteLine($"To Client: {message}");
         await stream.WriteAsync(Encoding.UTF8.GetBytes(message + "\n"));
@@ -45,4 +50,6 @@ async Task ConnectClientAsync(TcpClient client)
     }
 
     client.Close();
+    Console.WriteLine($"Client {client.Client.RemoteEndPoint}: end connect");
+
 }
